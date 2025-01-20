@@ -1,0 +1,33 @@
+
+{% extends 'tenantapp/base.html' %}
+
+{% block title %}Blog Posts{% endblock %}
+
+{% block content %}
+    <h1>Blog Posts</h1>
+
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }}! <a href="{% url 'user_logout' %}" class="btn btn-warning">Logout</a></p>
+    {% else %}
+        <p><a href="{% url 'user_login' %}" class="btn btn-primary">Login</a> or <a href="{% url 'register' %}" class="btn btn-success">Register</a></p>
+    {% endif %}
+
+    <!-- Search form -->
+    <form method="get" action="{% url 'search_blog_posts' %}">
+        <input type="text" name="q" placeholder="Search blog posts..." class="form-control" value="{{ request.GET.q }}">
+        <button type="submit" class="btn btn-primary mt-2">Search</button>
+    </form>
+
+    <ul class="list-group">
+        {% for post in posts %}
+            <li class="list-group-item">
+                <h2><a href="{% url 'blog_detail' post.id %}">{{ post.title }}</a></h2>
+                <p>{{ post.content|truncatewords:20 }}</p>
+                <p><strong>Category:</strong> {{ post.category.name }}</p>
+                <p><strong>Published on:</strong> {{ post.created_at }}</p>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No blog posts available.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

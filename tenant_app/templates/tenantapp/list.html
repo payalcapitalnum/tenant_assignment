@@ -1,0 +1,20 @@
+<!-- tenantapp/templates/tenantapp/list.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tenant Specific Models</title>
+</head>
+<body>
+    <h1>List of Tenant-Specific Models</h1>
+    <ul>
+        {% for item in data %}
+            <li>{{ item.name }} - {{ item.description }}</li>
+        {% empty %}
+            <li>No data available</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'create_tenant_specific_model' %}">Create New Model</a>
+</body>
+</html>

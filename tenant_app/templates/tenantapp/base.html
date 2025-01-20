@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tenant Blog{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        #notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            display: none;
+            max-width: 300px;
+        }
+
+        /* Style for the notification dropdown */
+        .dropdown-menu {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        #notification-count {
+            display: none;
+        }
+        #notification-count.visible {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Tenant Blog</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'blog_list' %}">Home</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'create_blog_post' %}">Create Blog</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Notifications <span id="notification-count" class="badge bg-danger">0</span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="notification-list">
+                        <li class="dropdown-item no-notifications">No new notifications</li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user_logout' %}">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user_login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+                {% endif %}
+            </ul>
+            <form class="d-flex ms-auto" method="GET" action="{% url 'search_blog_posts' %}">
+                <input class="form-control me-2" type="search" placeholder="Search" name="q" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- Notification Area -->
+    <div id="notification" class="alert alert-info alert-dismissible fade show" role="alert">
+        <span id="notification-message"></span>
+        <button type="button" class="btn-close" aria-label="Close" onclick="closeNotification()"></button>
+    </div>
+
+    {% block content %}{% endblock %}
+</div>
+
+<script>
+    let socket;
+
+    function connectWebSocket() {
+        console.log("Attempting to connect WebSocket...");
+
+        socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/');
+
+
+
+        socket.onopen = function() {
+            console.log("WebSocket connection opened.");
+        };
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const message = data['message'];
+
+            console.log("Notification received: ", message);
+
+            // Display the notification message
+            const notificationElement = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notification-message');
+
+            notificationMessage.innerText = message;
+            notificationElement.style.display = 'block';
+            addNotificationToList(message);
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error: ", error);
+        };
+
+        socket.onclose = function(event) {
+            console.warn("WebSocket connection closed: ", event);
+            setTimeout(connectWebSocket, 1000); // Reconnect after 1 second if disconnected
+        };
+    }
+
+    connectWebSocket();
+
+    function addNotificationToList(message) {
+        const notificationListElement = document.getElementById('notification-list');
+        const notificationItem = document.createElement('li');
+        notificationItem.classList.add('dropdown-item');
+        notificationItem.innerText = message;
+        notificationListElement.appendChild(notificationItem);
+    }
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
