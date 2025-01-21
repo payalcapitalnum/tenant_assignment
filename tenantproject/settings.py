@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,12 +56,18 @@ TENANT_APPS = [
 
 INSTALLED_APPS = SHARED_APPS + TENANT_APPS
 
+# ELASTICSEARCH_DSL = {
+#     'default': {
+#         'hosts': 'http://localhost:9200'  # Ensure the URL includes 'http://'
+#     }
+# }
+
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'http://localhost:9200'  # Ensure the URL includes 'http://'
-    }
+        'hosts': 'http://localhost:9200',
+        'timeout': 30,  # Increase timeout as necessary
+    },
 }
-
 MIDDLEWARE = [
     'django_tenants.middleware.TenantMiddleware',  # Add the tenant middleware
     'django.middleware.security.SecurityMiddleware',
@@ -115,11 +122,11 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django_tenants.postgresql_backend',
-        'NAME': 'tenant',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
         
     }
 }

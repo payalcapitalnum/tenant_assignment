@@ -151,58 +151,7 @@ def blog_detail(request, post_id):
 
     return render(request, 'tenantapp/blog_detail.html', {'post': post, 'form': form})
 
-# views.py
-# def blog_detail(request, post_id):
-#     post = get_object_or_404(BlogPost, id=post_id)
-#
-#     if request.method == 'POST':
-#         if request.user.is_authenticated:
-#             form = BlogCommentForm(request.POST)
-#             if form.is_valid():
-#                 comment = form.save(commit=False)
-#                 comment.post = post
-#                 comment.author = request.user.username
-#                 comment.save()
-#
-#                 # Debug print to ensure this part of the code is reached
-#                 print(f"=== User {request.user.username} commented on post {post.title}")
-#
-#                 # Send notification to the post author if they are not the commenter
-#                 if post.author != request.user:
-#                     send_notification(
-#                         post.author,
-#                         f"{request.user.username} commented: '{comment.content}' on your post '{post.title}'."
-#                     )
-#                     print(f"=== Notification sent to {post.author.username}")
-#
-#                 messages.success(request, "Your comment has been posted.")
-#                 return redirect('blog_detail', post_id=post.id)
-#         else:
-#             return redirect('user_login')
-#     else:
-#         form = BlogCommentForm()
-#
-#     return render(request, 'tenantapp/blog_detail.html', {'post': post, 'form': form})
 
-
-# def send_notification(user, message):
-#     logger.info(f"Preparing to send notification to user {user.username}: {message}")
-#
-#     channel_layer = get_channel_layer()
-#     group_name = f'user_{user.id}'
-#
-#     # Log the channel layer and group name details
-#     logger.info(f"Using channel layer: {channel_layer}, targeting group: {group_name}")
-#
-#     # Send the message to the user's WebSocket group
-#     async_to_sync(channel_layer.group_send)(
-#         group_name,
-#         {
-#             'type': 'send_notification',
-#             'message': message,
-#         }
-#     )
-#     logger.info(f"Notification sent to group: {group_name} for user {user.username}")
 
 def send_notification(user, message):
     logger.info(f"Preparing to send notification to user {user.username}: {message}")
@@ -242,3 +191,26 @@ def create_blog_post(request):
 
     logger.debug("Rendering the blog post creation form.")
     return render(request, 'tenantapp/create_blog_post.html', {'form': form})
+
+# @login_required
+# def create_blog_post(request):
+#     if request.method == 'POST':
+#         form = BlogPostForm(request.POST)
+#         if form.is_valid():
+#             blog_post = form.save()
+#             tenant_name = request.tenant.name  # Adjust based on your tenant access
+#             try:
+#                 blog_document = BlogPostDocument.for_tenant(tenant_name)
+#                 blog_document.init()  # Ensure the index is created
+#                 blog_document.update(blog_post)
+#                 logger.info("Blog post created and indexed successfully.")
+#             except Exception as e:
+#                 logger.error(f"Failed to index blog post for tenant {tenant_name}: {e}")
+#                 # Optionally, add fallback logic here
+
+#         return redirect('blog_list')
+#     else:
+#         form = BlogPostForm()
+
+#     logger.debug("Rendering the blog post creation form.")
+#     return render(request, 'tenantapp/create_blog_post.html', {'form': form})

@@ -5,7 +5,6 @@ urlpatterns = [
     path('blogs/', blog_list, name='blog_list'),
     path('blogs/create/', create_blog_post, name='create_blog_post'),
     path('blogs/<int:post_id>/', blog_detail, name='blog_detail'),
-    # path('blogs/<int:post_id>/', blog_detail, name='blog_detail'),
     path('register/', register, name='register'),
     path('login/', user_login, name='user_login'),
     path('logout/', user_logout, name='user_logout'),
