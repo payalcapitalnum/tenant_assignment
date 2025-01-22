@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
-from .models import BlogPost
-from .forms import BlogPostForm, BlogCommentForm
+from .models import BlogPost, Notification
+from .forms import BlogPostForm, BlogCommentForm,UserRegisterForm
 from elasticsearch_dsl.query import MultiMatch
 
 
@@ -8,7 +8,6 @@ from django.shortcuts import redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm
 
 from django.contrib import messages
 
@@ -21,7 +20,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-from .models import Notification
 
 def notifications(request):
     # Fetch all notifications for the logged-in user
@@ -191,26 +189,3 @@ def create_blog_post(request):
 
     logger.debug("Rendering the blog post creation form.")
     return render(request, 'tenantapp/create_blog_post.html', {'form': form})
-
-# @login_required
-# def create_blog_post(request):
-#     if request.method == 'POST':
-#         form = BlogPostForm(request.POST)
-#         if form.is_valid():
-#             blog_post = form.save()
-#             tenant_name = request.tenant.name  # Adjust based on your tenant access
-#             try:
-#                 blog_document = BlogPostDocument.for_tenant(tenant_name)
-#                 blog_document.init()  # Ensure the index is created
-#                 blog_document.update(blog_post)
-#                 logger.info("Blog post created and indexed successfully.")
-#             except Exception as e:
-#                 logger.error(f"Failed to index blog post for tenant {tenant_name}: {e}")
-#                 # Optionally, add fallback logic here
-
-#         return redirect('blog_list')
-#     else:
-#         form = BlogPostForm()
-
-#     logger.debug("Rendering the blog post creation form.")
-#     return render(request, 'tenantapp/create_blog_post.html', {'form': form})

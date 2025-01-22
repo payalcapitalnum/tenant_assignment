@@ -56,18 +56,13 @@ TENANT_APPS = [
 
 INSTALLED_APPS = SHARED_APPS + TENANT_APPS
 
-# ELASTICSEARCH_DSL = {
-#     'default': {
-#         'hosts': 'http://localhost:9200'  # Ensure the URL includes 'http://'
-#     }
-# }
-
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'http://localhost:9200',
-        'timeout': 30,  # Increase timeout as necessary
-    },
+        'hosts': 'http://localhost:9200'  # Ensure the URL includes 'http://'
+    }
 }
+
+
 MIDDLEWARE = [
     'django_tenants.middleware.TenantMiddleware',  # Add the tenant middleware
     'django.middleware.security.SecurityMiddleware',
@@ -108,7 +103,11 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer",
+#     },
+# }
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

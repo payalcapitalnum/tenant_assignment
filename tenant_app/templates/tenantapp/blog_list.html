@@ -4,19 +4,19 @@
 {% block title %}Blog Posts{% endblock %}
 
 {% block content %}
-    <h1>Blog Posts</h1>
+    <h1>Posts</h1>
 
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated %}</br>
         <p>Welcome, {{ user.username }}! <a href="{% url 'user_logout' %}" class="btn btn-warning">Logout</a></p>
     {% else %}
         <p><a href="{% url 'user_login' %}" class="btn btn-primary">Login</a> or <a href="{% url 'register' %}" class="btn btn-success">Register</a></p>
-    {% endif %}
+    {% endif %}</br>
 
     <!-- Search form -->
     <form method="get" action="{% url 'search_blog_posts' %}">
         <input type="text" name="q" placeholder="Search blog posts..." class="form-control" value="{{ request.GET.q }}">
         <button type="submit" class="btn btn-primary mt-2">Search</button>
-    </form>
+    </form></br>
 
     <ul class="list-group">
         {% for post in posts %}
